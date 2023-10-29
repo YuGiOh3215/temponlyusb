@@ -98,6 +98,7 @@ class dataOutput:
         serial.write_line(szLine)
 
     def writeData(self,TTime, WSP, CWD, TiC, HUM, PRESS):
+        serial.write_line("allo")
         self.szLine = TTime + ',' + \
             WSP + ',' + \
             CWD + ',' + \
