@@ -1,7 +1,53 @@
-// import weatherbit
-// import microbit
-// from microbit import *
-// from logging import *
+// Note: If "???" is displayed, direction is unknown!
+function on_forever () {
+    if (LoggingIsOn == true) {
+        tempC = Math.roundWithPrecision(input.temperature(), 2)
+dataLog.writeData(td.getTime(), tempC)
+    } else {
+        showNotLoggingLED()
+    }
+    basic.pause(p1.getLogInterval())
+}
+function showQMarkLED () {
+    basic.showLeds(`
+        . # # # .
+        . # # # .
+        . . # . .
+        . . . . .
+        . . # . .
+        `)
+}
+input.onButtonPressed(Button.A, function () {
+    LoggingIsOn = !(LoggingIsOn)
+    if (LoggingIsOn == true) {
+        showLoggingLED()
+    } else {
+        showNotLoggingLED()
+    }
+})
+function showLoggingLED () {
+    basic.showLeds(`
+        . . . . .
+        . . . . #
+        . . . # .
+        # . # . .
+        . # . . .
+        `)
+}
+input.onButtonPressed(Button.B, function () {
+    showQMarkLED()
+})
+function showNotLoggingLED () {
+    basic.showLeds(`
+        # . . . #
+        . # . # .
+        . . # . .
+        . # . # .
+        # . . . #
+        `)
+}
+let LoggingIsOn = false
+let tempC = 0
 class TimeAndDate {
     private static _referenceCount: number
     private ____referenceCount_is_set: boolean
@@ -106,9 +152,7 @@ class TimeAndDate {
     }
     
 }
-
 TimeAndDate.__initTimeAndDate()
-
 class LoggingParams {
     private static _iLogInterval: number
     private ____iLogInterval_is_set: boolean
@@ -146,39 +190,7 @@ class LoggingParams {
     }
     
 }
-
 LoggingParams.__initLoggingParams()
-
-function showLoggingLED() {
-    basic.showLeds(`
-        . . . . .
-        . . . . #
-        . . . # .
-        # . # . .
-        . # . . .
-    `)
-}
-
-function showNotLoggingLED() {
-    basic.showLeds(`
-        # . . . #
-        . # . # .
-        . . # . .
-        . # . # .
-        # . . . #
-    `)
-}
-
-function showQMarkLED() {
-    basic.showLeds(`
-        . # # # .
-        . # # #.
-        . . # . .
-        . . . . .
-        . . # . .
-    `)
-}
-
 class dataOutput {
     szLine: string
     constructor() {
@@ -196,43 +208,10 @@ class dataOutput {
     }
     
 }
-
-input.onButtonPressed(Button.A, function on_button_pressed_a() {
-    
-    LoggingIsOn = !LoggingIsOn
-    if (LoggingIsOn == true) {
-        showLoggingLED()
-    } else {
-        showNotLoggingLED()
-    }
-    
-})
-input.onButtonPressed(Button.B, function on_button_pressed_b() {
-    showQMarkLED()
-})
 let p1 = new LoggingParams()
 let dataLog = new dataOutput()
 let td = new TimeAndDate()
-let LoggingIsOn = false
 serial.redirectToUSB()
-/** Note: If "???" is displayed, direction is unknown! */
-function on_forever() {
-    
-    let tempC = 0
-    if (LoggingIsOn == true) {
-        //  -------- wind --------
-        //  -------- temperature --------
-        tempC = Math.roundWithPrecision(input.temperature(), 2)
-        //  -------- humidity --------
-        //  -------- pressure --------
-        dataLog.writeData(td.getTime(), tempC)
-    } else {
-        showNotLoggingLED()
-    }
-    
-    basic.pause(p1.getLogInterval())
-}
-
 td.start()
 dataLog.writeHeader()
 while (true) {

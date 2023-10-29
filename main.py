@@ -1,8 +1,8 @@
-#import weatherbit
-#import microbit
+import weatherbit
+import microbit
 
-#from microbit import *
-#from logging import *
+from microbit import *
+from logging import *
 
 
 class TimeAndDate:
@@ -43,7 +43,7 @@ class TimeAndDate:
         if (self._refHours >= 24):
             self._refHours = self._refHours - 24
 
-        szLine = self.Count + "\t"+ self._refHours + \
+        szLine = self.Count + " | "+ self._refHours + \
          ':' + self._refMinutes + ':' + self.Seconds
         return szLine
 
@@ -94,11 +94,16 @@ class dataOutput:
         self.szLine = ""
 
     def writeHeader(self):
-        self.szLine = 'Time\thh:mm:ss\tTiC'
-        serial.write_line(self.szLine)
+        self.szLine = 'Time,WSP,CWD,TiC,HUM,PRESS'
+        serial.write_line(szLine)
 
-    def writeData(self,TTime, TiC):
-        self.szLine = TTime + '\t' + TiC
+    def writeData(self,TTime, WSP, CWD, TiC, HUM, PRESS):
+        self.szLine = TTime + ',' + \
+            WSP + ',' + \
+            CWD + ',' + \
+            TiC + ',' + \
+            HUM + ',' + \
+            PRESS
 
         serial.write_line(self.szLine)
 
@@ -128,6 +133,10 @@ td = TimeAndDate()
 
 LoggingIsOn = False
 
+weatherbit.start_wind_monitoring()
+weatherbit.start_weather_monitoring()
+
+#serial.redirect(SerialPin.P15, SerialPin.P14, BaudRate.BAUD_RATE9600)
 serial.redirect_to_usb()
 
 """
@@ -141,17 +150,25 @@ def on_forever():
     global p1, dataLog, td
      
     tempC = 0
+    current_WindSpeed = 0.0
+    current_WindDirection_List = ""
   
     if LoggingIsOn == True:
         # -------- wind --------
+        current_WindSpeed = Math.round_with_precision(weatherbit.wind_speed() * 3600 / 1000,2)
+        
+        current_WindDirection_List = weatherbit.wind_direction()
 
         # -------- temperature --------
-        tempC = Math.round_with_precision(input.temperature(),2)
+        tempC = Math.round_with_precision((weatherbit.temperature()/ 100),0)
         # -------- humidity --------
 
+        humid = Math.round_with_precision((weatherbit.humidity()/ 1024),1)
         # -------- pressure --------
+        pressure = Math.round_with_precision(weatherbit.pressure()/ 25600,1)
 
-        dataLog.writeData(td.getTime(), tempC)
+        dataLog.writeData(td.getTime(),current_WindSpeed, current_WindDirection_List,
+                        tempC, humid, pressure)
     else:
         showNotLoggingLED()
         

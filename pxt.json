@@ -1,5 +1,5 @@
 {
-    "name": "TempOnlyUSB",
+    "name": "StationMeteoDebase",
     "description": "",
     "dependencies": {
         "core": "*",
@@ -16,7 +16,7 @@
         "test.ts"
     ],
     "targetVersions": {
-        "target": "6.0.8",
+        "target": "6.0.19",
         "targetId": "microbit"
     },
     "supportedTargets": [
